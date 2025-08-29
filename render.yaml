@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: metsumi-launchpad
+    env: node
+    plan: free
+    buildCommand: |
+      corepack enable
+      corepack prepare pnpm@latest --activate
+      pnpm install --frozen-lockfile=false
+      pnpm build
+    startCommand: pnpm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXT_PUBLIC_CLUSTER
+        value: mainnet-beta
+      - key: NEXT_PUBLIC_SOLANA_RPC_URL
+        sync: false
+      - key: SOLANA_RPC_URL
+        sync: false
+      - key: NEXT_PUBLIC_METSUMI_MINT
+        value: J3Mpjvkc31hn58z4uKN6svrPYwpNaewVTkBZCbekjupx
+      - key: NEXT_PUBLIC_TREASURY
+        value: Xv2hK594scUGZs9V7tqhavkfcUyEBHfUt7RNC29HHyN
+      - key: LAUNCH_WEBHOOK_URL
+        sync: false
+      - key: LAUNCH_WEBHOOK_SECRET
+        sync: false

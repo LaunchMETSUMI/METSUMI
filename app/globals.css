@@ -1,0 +1,244 @@
+/* ========= THEME TOKENS ========= */
+:root{
+  color-scheme: dark light;
+  --bg-0:#0b0a10; --bg-1:#120f1a; --bg-2:#1b1426;
+  --ink:#EDEBFF; --muted:#a9a3c7;
+  --accent:#7a3cff; --accent-2:#ff7a18; --teal:#10f0d0;
+  --glass:rgba(255,255,255,.06); --border:rgba(255,255,255,.14);
+  --shadow:0 20px 60px rgba(0,0,0,.55); --radius:22px;
+  --scanline: rgba(0,0,0,.25);
+}
+/* Light mode tokens */
+@media (prefers-color-scheme: light){
+  :root{
+    --bg-0:#faf9ff; --bg-1:#ffffff; --bg-2:#f3f0ff;
+    --ink:#171427; --muted:#5c5575;
+    --glass:rgba(10,8,24,.06); --border:rgba(10,8,24,.12);
+    --shadow:0 20px 60px rgba(17,14,28,.12);
+    --scanline: rgba(0,0,0,.08);
+  }
+}
+/* Manual light/dark via attribute (overrides system) */
+html[data-theme="light"]{
+  --bg-0:#faf9ff; --bg-1:#ffffff; --bg-2:#f3f0ff;
+  --ink:#171427; --muted:#5c5575;
+  --glass:rgba(10,8,24,.06); --border:rgba(10,8,24,.12);
+  --shadow:0 20px 60px rgba(17,14,28,.12);
+  --scanline: rgba(0,0,0,.08);
+}
+html[data-theme="dark"]{
+  --bg-0:#0b0a10; --bg-1:#120f1a; --bg-2:#1b1426;
+  --ink:#EDEBFF; --muted:#a9a3c7;
+  --glass:rgba(255,255,255,.06); --border:rgba(255,255,255,.14);
+  --shadow:0 20px 60px rgba(0,0,0,.55);
+  --scanline: rgba(0,0,0,.25);
+}
+
+/* ========= BASE ========= */
+*{box-sizing:border-box}
+html,body{height:100%; min-height:100dvh;}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 10% -10%, color-mix(in oklab, var(--accent) 35%, transparent) 0%, transparent 60%),
+    radial-gradient(900px 600px at 100% 0%, color-mix(in oklab, var(--accent-2) 28%, transparent) 0%, transparent 60%),
+    radial-gradient(1200px 900px at 50% 120%, color-mix(in oklab, #10182a 70%, transparent) 0%, transparent 60%),
+    linear-gradient(var(--bg-0), var(--bg-0));
+  font-family:"Sora",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  line-height:1.45; overflow-x:hidden;
+}
+a{color:inherit; text-decoration:none}
+.wrap{
+  position:relative; min-height:100svh;
+  display:grid; grid-template-rows:auto 1fr auto; isolation:isolate;
+}
+
+/* ========= STARFIELD (soften for light mode) ========= */
+.stars,.twinkle{
+  position:fixed; inset:0; pointer-events:none; z-index:-2; opacity:.55;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.8) 0 50%, transparent 51%),
+    radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,.8) 0 50%, transparent 51%),
+    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,.7) 0 50%, transparent 51%),
+    radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,.65) 0 50%, transparent 51%),
+    radial-gradient(1px 1px at 20% 60%, rgba(255,255,255,.6) 0 50%, transparent 51%);
+  background-size:900px 900px,1100px 1100px,1000px 1000px,1200px 1200px,1400px 1400px;
+  animation:drift 240s linear infinite;
+}
+html[data-theme="light"] .stars{opacity:.22}
+.twinkle{
+  z-index:-1; opacity:.22;
+  background-image:
+    radial-gradient(2px 2px at 25% 30%, color-mix(in oklab, var(--accent) 75%, transparent) 0 50%, transparent 51%),
+    radial-gradient(2px 2px at 80% 70%, color-mix(in oklab, var(--accent-2) 75%, transparent) 0 50%, transparent 51%),
+    radial-gradient(2px 2px at 60% 10%, color-mix(in oklab, var(--teal) 85%, transparent) 0 50%, transparent 51%);
+  background-size:1200px 1200px,1400px 1400px,1600px 1600px;
+  animation:drift 180s linear infinite reverse, twinkle 4s ease-in-out infinite;
+}
+html[data-theme="light"] .twinkle{opacity:.12}
+@keyframes drift{from{background-position:0 0,0 0,0 0,0 0,0 0}to{background-position:900px 900px,1100px 1100px,1000px 1000px,1200px 1200px,1400px 1400px}}
+@keyframes twinkle{0%,100%{opacity:.12}50%{opacity:.26}}
+
+/* ========= CRT overlay (subtle in light mode) ========= */
+.crt::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:1000; mix-blend-mode:soft-light;
+  background:repeating-linear-gradient(to bottom, var(--scanline) 0 1px, rgba(0,0,0,0) 1px 3px); opacity:.45;
+}
+html[data-theme="light"] .crt::before{opacity:.18}
+.crt::after{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:999;
+  background:
+    radial-gradient(80% 60% at 50% 20%, color-mix(in oklab, var(--teal) 12%, transparent) 0%, transparent 65%),
+    radial-gradient(100% 60% at 50% 80%, color-mix(in oklab, var(--accent) 10%, transparent) 0%, transparent 70%);
+  filter:blur(10px);
+}
+
+/* ========= NAV ========= */
+.nav{
+  display:flex; align-items:center; gap:12px;
+  padding:calc(12px + env(safe-area-inset-top)) max(16px, calc(4vw + env(safe-area-inset-left))) 12px max(16px, calc(4vw + env(safe-area-inset-right)));
+}
+.brand{display:flex; align-items:center; gap:12px; letter-spacing:.6px; font-weight:700; font-size:clamp(18px,2.4vw,26px);}
+.logo{
+  width:28px; height:28px; border-radius:6px; object-fit:cover;
+  box-shadow:0 0 22px color-mix(in oklab, var(--teal) 80%, transparent), 0 0 60px color-mix(in oklab, var(--accent) 40%, transparent);
+}
+.nav .tag{
+  font-family:"Share Tech Mono",ui-monospace,monospace; padding:6px 10px; border-radius:999px; font-size:12px;
+  background:linear-gradient(90deg, color-mix(in oklab, var(--teal) 18%, transparent), color-mix(in oklab, var(--accent) 18%, transparent)); border:1px solid var(--border);
+}
+.nav-right{ margin-left:auto; display:flex; gap:10px; align-items:center; }
+
+/* Theme toggle */
+.toggle{
+  display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:12px;
+  border:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  box-shadow:var(--shadow); cursor:pointer; user-select:none; font-size:13px;
+  font-family:"Share Tech Mono",ui-monospace,monospace;
+}
+.toggle svg{ width:16px; height:16px; }
+
+/* ========= HERO ========= */
+.hero{display:grid; place-items:center; text-align:center; padding:clamp(24px,6vw,72px);}
+.panel{
+  width:min(1100px, 94vw); padding: clamp(18px, 4vw, 44px);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--glass) 100%, transparent), color-mix(in oklab, var(--glass) 60%, transparent));
+  border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
+  backdrop-filter: blur(8px) saturate(115%); position:relative; overflow:hidden;
+}
+.panel::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(800px 300px at 20% 0%, color-mix(in oklab, var(--accent) 28%, transparent), transparent 60%), radial-gradient(800px 300px at 80% 0%, color-mix(in oklab, var(--accent-2) 24%, transparent), transparent 60%);
+  opacity:.6;
+}
+
+.headline{position:relative; font-weight:800; font-size:clamp(34px,6.2vw,64px); letter-spacing:.3px; margin:2px 0 12px;
+  text-shadow:0 0 30px color-mix(in oklab, var(--accent) 35%, transparent), 0 0 10px color-mix(in oklab, var(--teal) 22%, transparent);}
+.text-logo{ position:relative; display:inline-block; }
+.text-logo::before{
+  content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:clamp(56px, 8.5vw, 92px); height:clamp(56px, 8.5vw, 92px);
+  background:url('/metsumi.gif') center/cover no-repeat;
+  border-radius:9999px; z-index:0; opacity:.98;
+  filter:drop-shadow(0 0 22px color-mix(in oklab, var(--teal) 55%, transparent)) drop-shadow(0 0 36px color-mix(in oklab, var(--accent) 45%, transparent));
+}
+.text-logo .glitch{ position:relative; z-index:1; }
+
+.sub{color:var(--muted); font-size:clamp(14px,1.8vw,18px); margin-bottom:26px; max-width:78ch; margin-left:auto; margin-right:auto;}
+
+.glitch{position:relative; display:inline-block;}
+.glitch::after,.glitch::before{
+  content:attr(data-text); position:absolute; inset:0; pointer-events:none; clip-path:inset(0 0 0 0); opacity:.6; filter:blur(.25px)
+}
+.glitch::before{transform:translate(-1px,0); color:var(--accent); mix-blend-mode:screen}
+.glitch::after{transform:translate(1px,0); color:var(--accent-2); mix-blend-mode:screen}
+
+/* ========= COUNTDOWN + glow ========= */
+.timer-wrap{margin:26px auto 14px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; font-family:"Share Tech Mono",ui-monospace,monospace;}
+.cell{
+  min-width: 92px; background: linear-gradient(180deg, color-mix(in oklab, var(--bg-2) 86%, transparent), color-mix(in oklab, var(--bg-1) 92%, transparent));
+  border:1px solid var(--border); border-radius:14px; padding:12px 14px 10px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 6px 26px color-mix(in oklab, var(--accent) 10%, transparent);
+}
+.num{
+  font-size: clamp(32px, 6vw, 46px); font-weight:700; line-height:1;
+  text-shadow:
+    0 0 14px color-mix(in oklab, var(--teal) 40%, transparent),
+    0 0 36px color-mix(in oklab, var(--accent) 30%, transparent),
+    0 0 60px color-mix(in oklab, var(--accent-2) 20%, transparent);
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+@keyframes glowPulse{
+  0%,100%{ filter: drop-shadow(0 0 0px transparent); opacity:1 }
+  50%{ filter: drop-shadow(0 0 6px color-mix(in oklab, var(--teal) 60%, transparent)); opacity:.96 }
+}
+.label{font-size:12px; color:#bfb8d8; letter-spacing:.18em; text-transform:uppercase;}
+html[data-theme="light"] .label{color:#5f547a}
+
+.tminus{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:"Share Tech Mono",ui-monospace,monospace;
+  color:color-mix(in oklab, var(--teal) 85%, var(--ink));
+  letter-spacing:.08em;
+  background:linear-gradient(90deg, color-mix(in oklab, var(--teal) 16%, transparent), color-mix(in oklab, var(--accent) 16%, transparent));
+  border:1px solid var(--border); border-radius:999px; padding:6px 12px; margin-bottom:10px;
+}
+.tminus .ping{ width:7px; height:7px; border-radius:50%; background:var(--teal); box-shadow:0 0 10px var(--teal); animation: ping 1.8s infinite ease-in-out }
+@keyframes ping{ 0%{ box-shadow:0 0 8px(var(--teal)) } 50%{ box-shadow:0 0 24px(var(--teal)) } 100%{ box-shadow:0 0 8px(var(--teal)) } }
+
+/* ========= BUTTONS ========= */
+.actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:22px }
+.btn{
+  position:relative; padding:13px 18px; border-radius:14px; font-weight:700; letter-spacing:.3px; border:1px solid var(--border);
+  background: radial-gradient(150px 60px at 0% 0%, color-mix(in oklab, var(--teal) 18%, transparent), transparent 60%), linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; box-shadow: var(--shadow);
+  will-change: transform;
+}
+.btn:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,.25) }
+.btn.primary{
+  background: linear-gradient(90deg, color-mix(in oklab, var(--accent) 32%, transparent), color-mix(in oklab, var(--accent-2) 32%, transparent)),
+              linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+}
+.btn .mono{ font-family:"Share Tech Mono", ui-monospace, monospace; font-weight:400; opacity:.9 }
+
+/* Extra glow for READY state */
+.cell.status .num{
+  text-shadow:
+    0 0 14px color-mix(in oklab, var(--teal) 55%, transparent),
+    0 0 36px color-mix(in oklab, var(--accent) 30%, transparent),
+    0 0 60px color-mix(in oklab, var(--accent-2) 24%, transparent);
+}
+
+
+/* ========= INFO / FOOTER ========= */
+.contract{ margin-top:18px; font-size:13px; color:#d6d0f1; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; font-family:"Share Tech Mono",ui-monospace,monospace; }
+html[data-theme="light"] .contract{ color:#4b4266; }
+.pill{ padding:8px 10px; border-radius:12px; background:var(--glass); border:1px solid var(--border) }
+.copy{ cursor:pointer; user-select:none; padding:8px 10px; border-radius:12px; border:1px dashed var(--border); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)) }
+.copy:hover{ border-color:rgba(255,255,255,.32) }
+
+footer{
+  padding: calc(18px + env(safe-area-inset-bottom)) max(16px, calc(4vw + env(safe-area-inset-right)));
+  padding-left: max(16px, calc(4vw + env(safe-area-inset-left)));
+  color:#b6b0cf; font-size:13px; display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  border-top:1px solid rgba(255,255,255,.06); background:linear-gradient(180deg, transparent, rgba(255,255,255,.02))
+}
+html[data-theme="light"] footer{ color:#5e557a; border-top-color: rgba(10,8,24,.08) }
+
+/* ========= RESPONSIVE NITS ========= */
+@media (max-width:480px){
+  .cell{ min-width: 84px }
+  .brand{ gap:10px }
+  .logo{ width:26px; height:26px }
+}
+
+/* Small enhancement so inputs styled like your pills */
+input.pill, select.pill, textarea.pill {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--ink);
+  outline: none;
+  width: 100%;
+}
